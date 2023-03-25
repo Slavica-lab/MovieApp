@@ -36,6 +36,9 @@ import androidx.compose.material.icons.filled.FavoriteBorder
 import androidx.compose.material.icons.filled.KeyboardArrowUp
 import androidx.compose.runtime.*
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.ui.modifier.modifierLocalConsumer
+import androidx.compose.ui.unit.sp
+import com.example.movieapp.models.getMovies
 
 
 class MainActivity : ComponentActivity() {
@@ -48,43 +51,76 @@ class MainActivity : ComponentActivity() {
                     modifier = Modifier.fillMaxSize(),
                     color = MaterialTheme.colors.background
                 ) {
-                    Greeting("Android")
+
+                    MovieList(getMovies())
                 }
             }
         }
     }
 }
 
-@Composable
-fun Greeting(name: String) {
-    Text(text = "Hello $name!")
-}
 
 
 @Composable
 fun MovieRow(movie: Movie){
-    val padding = 16.dp
-    Column() {
-        var verticalAlignment = Alignment.CenterVertically
-        var horizontalArrangement = Arrangement.End
-        Box() {
-            //why red
-            //Image(painter = painterResource(id = R.drawable.avatar))
-            //Icon(/*...*/)
-        }
-        Row() {
+    Card(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(20.dp),
+        elevation = 5.dp,
+        shape = RoundedCornerShape(15.dp)
+    ) {
+        Column(
+            modifier = Modifier.fillMaxWidth(),
+            verticalArrangement = Arrangement.Top,
+            horizontalAlignment = Alignment.End
+        ) {
+            Box(
+                modifier = Modifier.fillMaxWidth()
+            ) {
+                Image(painter = painterResource(id = R.drawable.avatar), contentDescription = null)
+                Box(
+                    modifier = Modifier
+                        .align(Alignment.TopEnd)
+                        .padding(10.dp)
+                ) {
+                    Icon(
+                        imageVector = Icons.Filled.FavoriteBorder,
+                        contentDescription = null,
+                        tint = MaterialTheme.colors.secondary
+                    )
+                }
+            }
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(10.dp),
+                horizontalArrangement = Arrangement.SpaceBetween
+            ) {
+                Text(text = movie.title, fontSize = 20.sp)
+                var isToggled by remember {
+                    mutableStateOf(false)
+                }
+                Icon(
+                    imageVector = Icons.Filled.KeyboardArrowUp,
+                    contentDescription = null,
+                    modifier =  Modifier.clickable { isToggled = !isToggled }
+                    )
 
+            }
         }
     }
-
 }
 
 
-
-@Preview(showBackground = true)
 @Composable
-fun DefaultPreview() {
-    MovieAppTheme {
-        Greeting("Android")
+fun MovieList(movies: List<Movie>){
+    LazyColumn {
+        items(movies){
+            movie -> MovieRow(movie)
+        }
     }
 }
+
+
+
