@@ -22,6 +22,7 @@ import androidx.compose.ui.unit.dp
 import com.example.movieapp.models.Movie
 import com.example.movieapp.ui.theme.MovieAppTheme
 import android.util.Log
+import androidx.compose.animation.animateContentSize
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -32,12 +33,15 @@ import androidx.compose.foundation.shape.CornerSize
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.FavoriteBorder
-import androidx.compose.material.icons.filled.KeyboardArrowUp
 import androidx.compose.runtime.*
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.material.icons.filled.*
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.modifier.modifierLocalConsumer
+import androidx.compose.ui.unit.DpOffset
 import androidx.compose.ui.unit.sp
+import androidx.compose.ui.window.PopupProperties
+import coil.compose.AsyncImage
 import com.example.movieapp.models.getMovies
 
 
@@ -51,21 +55,25 @@ class MainActivity : ComponentActivity() {
                     modifier = Modifier.fillMaxSize(),
                     color = MaterialTheme.colors.background
                 ) {
-
-                    MovieList(getMovies())
+                    Column {
+                        TopAppBarHomeScreen()
+                        MovieList(getMovies())
+                    }
                 }
             }
         }
     }
 }
 
-
-
 @Composable
 fun MovieRow(movie: Movie){
+    var isToggled by remember {
+        mutableStateOf(false)
+    }
     Card(
         modifier = Modifier
             .fillMaxWidth()
+            .animateContentSize()
             .padding(20.dp),
         elevation = 5.dp,
         shape = RoundedCornerShape(15.dp)
@@ -76,9 +84,18 @@ fun MovieRow(movie: Movie){
             horizontalAlignment = Alignment.End
         ) {
             Box(
-                modifier = Modifier.fillMaxWidth()
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(180.dp)
             ) {
-                Image(painter = painterResource(id = R.drawable.avatar), contentDescription = null)
+                //Image(painter = painterResource(id = R.drawable.avatar), contentDescription = null)
+                AsyncImage(
+                    modifier = Modifier
+                        .fillMaxWidth(),
+                    model = movie.images[0],
+                    contentDescription = null,
+                    contentScale = ContentScale.Crop
+                )
                 Box(
                     modifier = Modifier
                         .align(Alignment.TopEnd)
@@ -98,18 +115,76 @@ fun MovieRow(movie: Movie){
                 horizontalArrangement = Arrangement.SpaceBetween
             ) {
                 Text(text = movie.title, fontSize = 20.sp)
-                var isToggled by remember {
-                    mutableStateOf(false)
-                }
                 Icon(
-                    imageVector = Icons.Filled.KeyboardArrowUp,
+                    imageVector = if (isToggled){
+                        Icons.Filled.KeyboardArrowUp
+                    }else{
+                        Icons.Filled.KeyboardArrowDown
+                    },
                     contentDescription = null,
                     modifier =  Modifier.clickable { isToggled = !isToggled }
                     )
-
+            }
+            if(isToggled){
+                Column(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(10.dp),
+                    verticalArrangement = Arrangement.Top,
+                    horizontalAlignment = Alignment.Start
+                ) {
+                    Text("Director: ${movie.director}")
+                    Text("Released: ${movie.year}")
+                    Text("Genre: ${movie.genre}")
+                    Text("Actors: ${movie.actors}")
+                    Text("Rating: ${movie.rating}")
+                    Spacer(modifier = Modifier.height(height = 8.dp))
+                    Divider(thickness = 1.dp, color = MaterialTheme.colors.primary)
+                    Spacer(modifier = Modifier.height(height = 8.dp))
+                    Text(text = "Plot: ${movie.plot}", Modifier.padding(5.dp),
+                        style = MaterialTheme.typography.body1)
+                }
             }
         }
     }
+}
+
+@Composable
+fun TopAppBarHomeScreen(){
+    var expanded by remember{
+        mutableStateOf(false)
+    }
+    TopAppBar(
+        elevation = 4.dp,
+        title = {
+            Text("Movies")
+        },
+        backgroundColor =  MaterialTheme.colors.primary,
+        actions = {
+            IconButton(onClick = {
+                expanded = true
+            }) {
+                Icon(Icons.Filled.MoreVert, contentDescription = null)
+            }
+            DropdownMenu(
+                modifier = Modifier.width(width = 150.dp),
+                expanded = expanded,
+                onDismissRequest = {
+                    expanded = false
+                },
+                properties = PopupProperties()
+            ){
+            DropdownMenuItem(onClick = { /*for LD 3*/ }) {
+                Icon(
+                    imageVector = Icons.Filled.Favorite,
+                    contentDescription = null,
+                    tint = MaterialTheme.colors.secondary
+                )
+                Spacer(modifier = Modifier.width(width = 8.dp))
+                Text("Favorites")
+            }
+            }
+        })
 }
 
 
