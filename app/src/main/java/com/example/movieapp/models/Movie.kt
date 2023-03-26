@@ -141,3 +141,8 @@ fun getMovies(): List<Movie> {
 
         )
 }
+
+fun getFavorites(): List<Movie>{
+    var movies = getMovies()
+    return listOf(movies[0], movies[2], movies[4])
+}
