@@ -1,9 +1,7 @@
 package com.example.movieapp.screens
 
 import androidx.compose.animation.animateContentSize
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -18,8 +16,9 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import coil.compose.AsyncImage
-import com.example.movieapp.models.Movie
 import com.example.movieapp.models.getMovies
+import com.example.movieapp.widgets.MovieRow
+import com.example.movieapp.widgets.SimpleAppBar
 
 @Composable
 fun DetailScreen(navController: NavController, movieId: String?) {
@@ -29,7 +28,7 @@ fun DetailScreen(navController: NavController, movieId: String?) {
         color = MaterialTheme.colors.background
     ) {
         Column {
-            TopAppBarGlobal(navController, movie.title, true, false)
+            SimpleAppBar(navController, movie.title, true, false)
             MovieRow(movie = movie){}
             MovieImages(navController = navController, images = movie.images)
         }

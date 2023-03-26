@@ -8,7 +8,8 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.navigation.NavController
 import com.example.movieapp.models.getFavorites
-import com.example.movieapp.models.getMovies
+import com.example.movieapp.widgets.MovieList
+import com.example.movieapp.widgets.SimpleAppBar
 
 @Composable
 fun FavoriteScreen(navController: NavController) {
@@ -17,7 +18,7 @@ fun FavoriteScreen(navController: NavController) {
         color = MaterialTheme.colors.background
     ) {
         Column {
-            TopAppBarGlobal(navController, "Favorites", true, false)
+            SimpleAppBar(navController, "Favorites", true, false)
             MovieList(navController = navController, movies = getFavorites())
         }
     }
